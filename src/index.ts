@@ -14,8 +14,9 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import expressSession from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
-import { PrismaClient } from "@prisma/client";
-import { AuthRoute, SearchRoute } from "./routes";
+import { db } from "./config/db/real-estate";
+import { authRoute, searchRoute } from "./routes";
+import passport from "passport";
 
 const app = express();
 const port = 8000;
@@ -24,8 +25,6 @@ const corsOptions = {
 	origin: "http://localhost:3000",
 	// optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
-
-const prismaClientInstance = new PrismaClient();
 
 app.use(cors(corsOptions));
 app.set("views", path.join(__dirname, "views"));
@@ -43,16 +42,20 @@ app.use(
 		secret: process.env.COOKIE_SECRET as string,
 		resave: true,
 		saveUninitialized: true,
-		store: new PrismaSessionStore(prismaClientInstance, {
+		// @ts-ignore
+		store: new PrismaSessionStore(db, {
 			checkPeriod: 2 * 60 * 1000, //ms
 			dbRecordIdIsSessionId: true,
 			dbRecordIdFunction: undefined,
 		}),
 	})
 );
+import("./config/passport/local");
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use("/search", SearchRoute);
-app.use("/auth", AuthRoute);
+app.use("/search", searchRoute);
+app.use("/auth", authRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -7,65 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model listing {
-  title                                 String?   @db.VarChar(300)
-  description                           String?   @db.VarChar(300)
-  id                                    Int       @id
-  userId                                Int?
-  locationId                            Int?
-  priceId                               Int?
-  typeId                                Int?
-  users                                 users?    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "listing_ibfk_1")
-  location_listing_locationIdTolocation location? @relation("listing_locationIdTolocation", fields: [locationId], references: [locationId], onDelete: NoAction, onUpdate: NoAction, map: "listing_ibfk_3")
-  price_listing_priceIdToprice          price?    @relation("listing_priceIdToprice", fields: [priceId], references: [priceId], onDelete: NoAction, onUpdate: NoAction, map: "listing_ibfk_4")
-  type_listing_typeIdTotype             type?     @relation("listing_typeIdTotype", fields: [typeId], references: [typeId], onDelete: NoAction, onUpdate: NoAction, map: "listing_ibfk_5")
-  location_location_locationIdTolisting location? @relation("location_locationIdTolisting")
-  price_price_priceIdTolisting          price?    @relation("price_priceIdTolisting")
-  type_type_typeIdTolisting             type?     @relation("type_typeIdTolisting")
-
-  @@index([locationId], map: "locationId")
-  @@index([priceId], map: "priceId")
-  @@index([typeId], map: "typeId")
-  @@index([userId], map: "userId")
-}
-
-model location {
-  locationId                           Int       @id
-  location                             String?   @db.TinyText
-  listing_listing_locationIdTolocation listing[] @relation("listing_locationIdTolocation")
-  listing_location_locationIdTolisting listing   @relation("location_locationIdTolisting", fields: [locationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "location_ibfk_1")
-}
-
-model price {
-  priceId                        Int       @id
-  price                          Decimal?  @db.Decimal(10, 0)
-  listing_listing_priceIdToprice listing[] @relation("listing_priceIdToprice")
-  listing_price_priceIdTolisting listing   @relation("price_priceIdTolisting", fields: [priceId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "price_ibfk_1")
-}
-
-model type {
-  typeId                       Int       @id
-  type                         String?   @db.TinyText
-  listing_listing_typeIdTotype listing[] @relation("listing_typeIdTotype")
-  listing_type_typeIdTolisting listing   @relation("type_typeIdTolisting", fields: [typeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "type_ibfk_1")
-}
-
-model users {
-  userId      Int       @id
-  username    String?   @db.TinyText
-  password    String?   @db.Char(60)
-  firstName   String?   @db.VarChar(100)
-  middleName  String?   @db.VarChar(100)
-  emails      String?   @db.VarChar(100)
-  phoneNumber String?   @db.TinyText
-  photo       Bytes?    @db.Blob
-  salt        String?   @db.VarChar(255)
-  listing     listing[]
-}
-
 model session {
   id        String   @id
   sid       String   @unique(map: "Session_sid_key")
-  data      String?  @db.Text
+  data      String
   expiresAt DateTime
+}
+
+model users {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique(map: "Users_email_key")
+  username String   @unique(map: "Users_username_key")
+  hash     String
+  salt     String
+  verified Boolean?
 }
