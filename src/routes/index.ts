@@ -1,2 +1,2 @@
-export { default as AuthRoute } from "./auth";
-export { default as SearchRoute } from "./search";
+export { default as authRoute } from "./auth";
+export { default as searchRoute } from "./search";
