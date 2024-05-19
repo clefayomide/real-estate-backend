@@ -10,22 +10,25 @@ export const loginController = (
 ) =>
 	passport.authenticate(
 		"local",
-		(err: Error, user: any, info: any, status: any) => {
+		(err: string, user: any, info: any, status: any) => {
 			if (err) {
 				const errorResponse: ErrorType = {
-					message: err.message,
+					message: err,
 					status: false,
 					code: 401,
 				};
 				return res.status(errorResponse.code).jsonp(errorResponse);
 			}
-			const successResponse: SuccessType = {
-				code: 200,
-				message: "Login Successful",
-				status: true,
-				data: user,
-			};
-			res.status(successResponse.code).jsonp(successResponse);
+
+			req.logIn(user, () => {
+				const successResponse: SuccessType = {
+					code: 200,
+					message: "Login Successful",
+					status: true,
+					data: req.user,
+				};
+				res.status(successResponse.code).jsonp(successResponse);
+			});
 		}
 	)(req, res, next);
 

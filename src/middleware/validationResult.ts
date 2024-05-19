@@ -9,7 +9,7 @@ const validationResult = (req: Request, res: Response, next: NextFunction) => {
 		const errorMessages = populateError(result.array());
 		const errorResponse: ErrorType = {
 			status: false,
-			code: 422,
+			code: 400,
 			message: "Some fields are missing",
 			error: errorMessages,
 		};
