@@ -52,8 +52,10 @@ export async function checkIfUserExist(data: Omit<SignUpType, "password">) {
 	}
 }
 
-export async function getUser(data: Omit<SignUpType, "user">) {
-	const { email, password } = data;
+export async function getUser(
+	data: Omit<Omit<SignUpType, "username">, "password">
+) {
+	const { email } = data;
 	try {
 		const user = await db.users.findUnique({
 			where: {

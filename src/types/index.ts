@@ -19,5 +19,5 @@ export interface ErrorType extends RequestResponseI {
 }
 
 export interface SuccessType extends RequestResponseI {
-	data?: String[];
+	data?: any;
 }

@@ -19,9 +19,12 @@ import { authRoute, searchRoute } from "./routes";
 import passport from "passport";
 
 const app = express();
+const currentVersion = "/v1";
+
 const port = 8000;
 
 const corsOptions = {
+	credentials: true,
 	origin: "http://localhost:3000",
 	// optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
@@ -37,11 +40,13 @@ app.use(static_(path.join(__dirname, "public")));
 app.use(
 	expressSession({
 		cookie: {
-			maxAge: 7 * 24 * 60 * 60 * 1000, // ms
+			maxAge: 259200000,
+			httpOnly: true,
+			secure: app.settings["env"] !== "development",
 		},
 		secret: process.env.COOKIE_SECRET as string,
-		resave: true,
-		saveUninitialized: true,
+		resave: false,
+		saveUninitialized: false,
 		// @ts-ignore
 		store: new PrismaSessionStore(db, {
 			checkPeriod: 2 * 60 * 1000, //ms
@@ -50,12 +55,11 @@ app.use(
 		}),
 	})
 );
-import("./config/passport/local");
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use("/search", searchRoute);
-app.use("/auth", authRoute);
+require("./config/passport/local");
+app.use(`${currentVersion}/search`, searchRoute);
+app.use(`${currentVersion}/auth`, authRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
