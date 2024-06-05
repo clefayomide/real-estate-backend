@@ -1,1 +1,1 @@
-export { transporter as AppMailer } from "./notification/mailer";
+export { transporter as appMailer } from "./notification/mailer";
