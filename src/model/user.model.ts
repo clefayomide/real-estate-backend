@@ -19,7 +19,7 @@ export async function createNewUser(data: SignUpType) {
 		return user;
 	} catch (error) {
 		await db.$disconnect();
-		return error;
+		throw error;
 	}
 }
 
@@ -48,7 +48,7 @@ export async function checkIfUserExist(data: Omit<SignUpType, "password">) {
 		return user.length > 0;
 	} catch (error) {
 		await db.$disconnect();
-		return error;
+		throw error;
 	}
 }
 
@@ -66,6 +66,19 @@ export async function getUser(
 		return user;
 	} catch (error) {
 		await db.$disconnect();
-		return error;
+		throw error;
+	}
+}
+
+export async function updateUserVerificationStatus(
+	id: number,
+	status: boolean
+) {
+	try {
+		await db.users.update({ where: { id }, data: { verified: status } });
+		await db.$disconnect();
+	} catch (error) {
+		await db.$disconnect();
+		throw error;
 	}
 }
