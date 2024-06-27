@@ -15,8 +15,9 @@ import logger from "morgan";
 import expressSession from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import { db } from "./config/db/real-estate";
-import { authRoute, searchRoute } from "./routes";
+import { authRoute, searchRoute, verificationRoute } from "./routes";
 import passport from "passport";
+import isAuthenticated from "./middleware/isAuthenticated";
 
 const app = express();
 const currentVersion = "/v1";
@@ -57,8 +58,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 require("./config/passport/local");
+
 app.use(`${currentVersion}/search`, searchRoute);
 app.use(`${currentVersion}/auth`, authRoute);
+app.use(`${currentVersion}/verification`, isAuthenticated, verificationRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

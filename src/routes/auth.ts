@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { body } from "express-validator";
 import { appValidationResultMiddleware } from "../middleware";
-import { Auth } from "../controller/auth";
+import { User } from "../controller/user";
 
 const router = Router();
-const authController = new Auth();
+const auth = new User();
 
 router.post(
 	"/login",
@@ -12,7 +12,7 @@ router.post(
 	body("email").isEmail().withMessage("provide a valid email"),
 	body("password").notEmpty().withMessage("password is required"),
 	appValidationResultMiddleware,
-	(req, res, next) => authController.loginController(req, res, next)
+	(req, res, next) => auth.login(req, res, next)
 );
 
 router.post(
@@ -24,7 +24,7 @@ router.post(
 	body("email").notEmpty().withMessage("email is required"),
 	body("email").isEmail().withMessage("provide a valid email"),
 	appValidationResultMiddleware,
-	(req, res, next) => authController.registerController(req, res, next)
+	(req, res, next) => auth.register(req, res, next)
 );
 
 export default router;

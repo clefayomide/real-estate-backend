@@ -21,4 +21,19 @@ model users {
   hash     String
   salt     String
   verified Boolean?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  otp otp?
+}
+
+model otp {
+  id Int @id @default(autoincrement())
+  user users @relation(fields: [userId], references: [id])
+  userId Int @unique
+  hash String
+  salt String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  updatedAt DateTime @updatedAt
+
 }

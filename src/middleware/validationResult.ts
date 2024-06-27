@@ -10,7 +10,7 @@ const validationResult = (req: Request, res: Response, next: NextFunction) => {
 		const errorResponse: ErrorType = {
 			status: false,
 			code: 400,
-			message: "Some fields are missing",
+			message: "Validation error",
 			error: errorMessages,
 		};
 		return res.status(errorResponse.code).jsonp(errorResponse);
