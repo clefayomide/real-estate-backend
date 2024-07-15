@@ -5,8 +5,7 @@ import { appValidationResultMiddleware } from "../middleware";
 import { isInteger } from "../util/isInteger";
 
 const router = Router();
-const verification = new User();
-const { verificationRequest, verify } = verification;
+const { verificationRequest, verify } = new User();
 
 router.post(
 	"/verify",
