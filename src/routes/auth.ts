@@ -4,7 +4,7 @@ import { appValidationResultMiddleware } from "../middleware";
 import { User } from "../controller/user";
 
 const router = Router();
-const auth = new User();
+const { register, login } = new User();
 
 router.post(
 	"/login",
@@ -12,7 +12,7 @@ router.post(
 	body("email").isEmail().withMessage("provide a valid email"),
 	body("password").notEmpty().withMessage("password is required"),
 	appValidationResultMiddleware,
-	(req, res, next) => auth.login(req, res, next)
+	login
 );
 
 router.post(
@@ -24,7 +24,7 @@ router.post(
 	body("email").notEmpty().withMessage("email is required"),
 	body("email").isEmail().withMessage("provide a valid email"),
 	appValidationResultMiddleware,
-	(req, res, next) => auth.register(req, res, next)
+	register
 );
 
 export default router;

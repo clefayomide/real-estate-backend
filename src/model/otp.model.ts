@@ -1,7 +1,7 @@
 import { db } from "../config/db/real-estate";
+import { ErrorResponseFactory } from "../factory/ErrorFactory";
 import { generateHash, validateHash } from "../lib/cryptography/cryptography";
 import { CustomError } from "../lib/custom/errorConstructor";
-import { ErrorType } from "../types";
 import { generateOTP } from "../util/otpGenerator";
 
 export async function createOtp(userId: number) {
@@ -31,10 +31,8 @@ export async function createOtp(userId: number) {
 			},
 			create: data,
 		});
-		await db.$disconnect();
 		return { otp, email: email };
 	} catch (error) {
-		await db.$disconnect();
 		throw error;
 	}
 }
@@ -43,11 +41,8 @@ export async function verifyOtp(userId: number, otp: number | string) {
 	try {
 		const userWithOtp = await db.otp.findUnique({ where: { userId } });
 		if (!userWithOtp) {
-			const errorResponse: ErrorType = {
-				status: false,
-				code: 404,
-				message: "user with id not found",
-			};
+			const { create } = new ErrorResponseFactory();
+			const { error: errorResponse } = create("user with id not found", 404);
 			throw new CustomError(errorResponse.message, errorResponse);
 		}
 		const { hash, salt, expiresAt } = userWithOtp;
@@ -58,10 +53,8 @@ export async function verifyOtp(userId: number, otp: number | string) {
 			isOtpExpired = !isValid;
 		}
 		const checks = { isOtpValid, isOtpExpired };
-		await db.$disconnect();
 		return checks;
 	} catch (error) {
-		await db.$disconnect();
 		throw error;
 	}
 }
