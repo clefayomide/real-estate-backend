@@ -9,24 +9,20 @@ const user_model_1 = require("../model/user.model");
 const lib_1 = require("../lib");
 const otp_model_1 = require("../model/otp.model");
 const errorConstructor_1 = require("../lib/custom/errorConstructor");
+const ErrorFactory_1 = require("../factory/ErrorFactory");
+const SuccessFactory_1 = require("../factory/SuccessFactory");
+const errorHandler_1 = require("../util/errorHandler");
 class User {
     login(req, res, next) {
         passport_1.default.authenticate("local", (err, user, info, status) => {
             if (err) {
-                const errorResponse = {
-                    message: err,
-                    status: false,
-                    code: 401,
-                };
+                const { create } = new ErrorFactory_1.ErrorResponseFactory();
+                const { error: errorResponse } = create(err, 401);
                 return res.status(errorResponse.code).jsonp(errorResponse);
             }
             req.logIn(user, () => {
-                const successResponse = {
-                    code: 200,
-                    message: "Login Successful",
-                    status: true,
-                    data: req.user,
-                };
+                const { create } = new SuccessFactory_1.SuccessResponseFactory();
+                const { success: successResponse } = create("Login Successful", 200, req.user);
                 res.status(successResponse.code).jsonp(successResponse);
             });
         })(req, res, next);
@@ -35,20 +31,14 @@ class User {
         (0, user_model_1.checkIfUserExist)({ email: req.body.email, username: req.body.username })
             .then((resp) => {
             if (resp) {
-                const errorResponse = {
-                    status: false,
-                    code: 409,
-                    message: "username or email aready exist",
-                };
+                const { create } = new ErrorFactory_1.ErrorResponseFactory();
+                const { error: errorResponse } = create("username or email aready exist", 409);
                 return res.status(errorResponse.code).jsonp(errorResponse);
             }
             (0, user_model_1.createNewUser)(req.body)
                 .then(() => {
-                const successResponse = {
-                    status: true,
-                    code: 201,
-                    message: "Registration Successful!",
-                };
+                const { create } = new SuccessFactory_1.SuccessResponseFactory();
+                const { success: successResponse } = create("Registration Successful!", 201);
                 res.status(successResponse.code).jsonp(successResponse);
                 res.render("welcome", { name: req.body.username }, (error, html) => {
                     if (!error) {
@@ -62,20 +52,14 @@ class User {
                 });
             })
                 .catch(() => {
-                const errorResponse = {
-                    message: "An error occurred",
-                    code: 500,
-                    status: false,
-                };
+                const { create } = new ErrorFactory_1.ErrorResponseFactory();
+                const { error: errorResponse } = create("An error occurred", 500);
                 res.status(errorResponse.code).jsonp(errorResponse);
             });
         })
             .catch(() => {
-            const errorResponse = {
-                message: "An error occurred",
-                code: 500,
-                status: false,
-            };
+            const { create } = new ErrorFactory_1.ErrorResponseFactory();
+            const { error: errorResponse } = create("An error occurred", 500);
             res.status(errorResponse.code).jsonp(errorResponse);
         });
     }
@@ -85,30 +69,21 @@ class User {
         (0, user_model_1.getUser)({ email })
             .then((user) => {
             if (!user) {
-                const errorResponse = {
-                    status: false,
-                    code: 404,
-                    message: "user with id not found",
-                };
+                const { create } = new ErrorFactory_1.ErrorResponseFactory();
+                const { error: errorResponse } = create("user with id not found", 404);
                 throw new errorConstructor_1.CustomError(errorResponse.message, errorResponse);
             }
             const { verified } = user;
             if (Boolean(verified)) {
-                const successResponse = {
-                    status: true,
-                    code: 200,
-                    message: "Account already verified",
-                };
+                const { create } = new SuccessFactory_1.SuccessResponseFactory();
+                const { success: successResponse } = create("Account already verified", 200);
                 return res.status(successResponse.code).jsonp(successResponse);
             }
             (0, otp_model_1.createOtp)(id)
                 .then((response) => {
                 const { otp, email } = response;
-                const successResponse = {
-                    status: true,
-                    code: 201,
-                    message: "OTP sent to your registered email address",
-                };
+                const { create } = new SuccessFactory_1.SuccessResponseFactory();
+                const { success: successResponse } = create("OTP sent to your registered email address", 201);
                 res.status(successResponse.code).jsonp(successResponse);
                 res.render("otp", { otp }, (error, html) => {
                     if (!error) {
@@ -122,20 +97,15 @@ class User {
                 });
             })
                 .catch((error) => {
-                const errorResponse = {
-                    message: error.message,
-                    code: error.data?.code ?? 500,
-                    status: false,
-                };
+                const { errorMessage, data } = (0, errorHandler_1.errorHandler)(error);
+                const { create } = new ErrorFactory_1.ErrorResponseFactory();
+                const { error: errorResponse } = create(errorMessage, data?.code ?? 500);
                 res.status(errorResponse.code).jsonp(errorResponse);
             });
         })
             .catch((error) => {
-            const errorResponse = {
-                status: false,
-                message: error,
-                code: 500,
-            };
+            const { create } = new ErrorFactory_1.ErrorResponseFactory();
+            const { error: errorResponse } = create(error, 500);
             res.status(errorResponse.code).jsonp(errorResponse);
         });
     }
@@ -144,46 +114,34 @@ class User {
         (0, otp_model_1.verifyOtp)(id, otp)
             .then(({ isOtpValid, isOtpExpired }) => {
             if (!isOtpValid) {
-                const errorResponse = {
-                    status: false,
-                    message: "Invalid otp provided",
-                    code: 400,
-                };
+                const { create } = new ErrorFactory_1.ErrorResponseFactory();
+                const { error: errorResponse } = create("Invalid otp provided", 400);
                 throw new errorConstructor_1.CustomError(errorResponse.message, errorResponse);
             }
             if (isOtpValid && isOtpExpired) {
-                const errorResponse = {
-                    status: false,
-                    message: "Otp has expired",
-                    code: 410,
-                };
+                const { create } = new ErrorFactory_1.ErrorResponseFactory();
+                const { error: errorResponse } = create("Otp has expired", 410);
                 throw new errorConstructor_1.CustomError(errorResponse.message, errorResponse);
             }
             (0, user_model_1.updateUserVerificationStatus)(id, true)
                 .then(() => {
-                const successResponse = {
-                    message: "Otp verification successful",
-                    status: true,
-                    code: 200,
-                    data: { verified: true },
-                };
+                const { create } = new SuccessFactory_1.SuccessResponseFactory();
+                const { success: successResponse } = create("Otp verification successful", 200, {
+                    verified: true,
+                });
                 res.status(successResponse.code).jsonp(successResponse);
             })
                 .catch((error) => {
-                const errorResponse = {
-                    status: error.data?.status ?? false,
-                    message: error.message,
-                    code: error.data?.code ?? 500,
-                };
+                const { errorMessage, data = null } = (0, errorHandler_1.errorHandler)(error);
+                const { create } = new ErrorFactory_1.ErrorResponseFactory();
+                const { error: errorResponse } = create(errorMessage, data?.code ?? 500);
                 res.status(errorResponse.code).jsonp(errorResponse);
             });
         })
             .catch((error) => {
-            const errorResponse = {
-                status: error.data?.status ?? false,
-                message: error.message,
-                code: error.data?.code ?? 500,
-            };
+            const { errorMessage, data } = (0, errorHandler_1.errorHandler)(error);
+            const { create } = new ErrorFactory_1.ErrorResponseFactory();
+            const { error: errorResponse } = create(errorMessage, data?.code ?? 500);
             res.status(errorResponse.code).jsonp(errorResponse);
         });
     }

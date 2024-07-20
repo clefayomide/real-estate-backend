@@ -5,6 +5,7 @@
 	"main": "index.ts",
 	"scripts": {
 		"start": "nodemon src/index.ts",
+		"prod": "node dist/index.js",
 		"build": "tsc"
 	},
 	"keywords": [],

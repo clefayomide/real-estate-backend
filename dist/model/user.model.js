@@ -16,11 +16,9 @@ async function createNewUser(data) {
             },
             select: null,
         });
-        await real_estate_1.db.$disconnect();
         return user;
     }
     catch (error) {
-        await real_estate_1.db.$disconnect();
         throw error;
     }
 }
@@ -46,11 +44,9 @@ async function checkIfUserExist(data) {
                 email: true,
             },
         });
-        await real_estate_1.db.$disconnect();
         return user.length > 0;
     }
     catch (error) {
-        await real_estate_1.db.$disconnect();
         throw error;
     }
 }
@@ -63,11 +59,9 @@ async function getUser(data) {
                 email,
             },
         });
-        await real_estate_1.db.$disconnect();
         return user;
     }
     catch (error) {
-        await real_estate_1.db.$disconnect();
         throw error;
     }
 }
@@ -75,10 +69,8 @@ exports.getUser = getUser;
 async function updateUserVerificationStatus(id, status) {
     try {
         await real_estate_1.db.users.update({ where: { id }, data: { verified: status } });
-        await real_estate_1.db.$disconnect();
     }
     catch (error) {
-        await real_estate_1.db.$disconnect();
         throw error;
     }
 }
