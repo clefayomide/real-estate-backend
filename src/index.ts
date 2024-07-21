@@ -22,7 +22,7 @@ import isAuthenticated from "./middleware/isAuthenticated";
 const app = express();
 const currentVersion = "/v1";
 
-const port = 8000;
+const port = process.env.PORT ?? 8000;
 
 const corsOptions = {
 	credentials: true,
