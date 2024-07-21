@@ -60,14 +60,16 @@ export class User {
 							"welcome",
 							{ name: req.body.username },
 							(error: Error, html: any) => {
-								if (!error) {
-									appMailer.sendMail({
-										from: 'noreply@safespace "safespace@outlook.com"',
-										to: req.body.email,
-										subject: "Welcome Note",
-										html,
-									});
+								if (error) {
+									return console.log(error);
 								}
+
+								appMailer.sendMail({
+									from: 'noreply@safespace "safespace@outlook.com"',
+									to: req.body.email,
+									subject: "Welcome Note",
+									html,
+								});
 							}
 						);
 					})

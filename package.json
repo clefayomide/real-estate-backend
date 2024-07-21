@@ -6,8 +6,8 @@
 	"scripts": {
 		"start": "nodemon src/index.ts",
 		"prod": "node dist/index.js",
-		"copyView": "copyfiles -u 1 src/views/* dist/views",
-		"copyPublic": "copyfiles -u 1 src/public/* dist/public",
+		"copyView": "copyfiles -u 1 src/views/**/* dist/views",
+		"copyPublic": "copyfiles -u 1 src/public/**/* dist/public",
 		"build": "yarn install && tsc && yarn run copyView && yarn run copyPublic"
 	},
 	"keywords": [],
