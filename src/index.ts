@@ -30,13 +30,13 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(static_(path.join(__dirname, "public")));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(static_(path.join(__dirname, "public")));
 app.use(
 	expressSession({
 		cookie: {
