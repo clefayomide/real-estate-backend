@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "nodemon src/index.ts",
 		"prod": "node dist/index.js",
-		"build": "yarn install && tsc"
+		"build": "yarn install && tsc && copyfiles -u 1 src/views/**/* dist/views && copyfiles -u 1 src/public/**/* dist/public"
 	},
 	"keywords": [],
 	"author": "",
@@ -39,6 +39,7 @@
 		"@types/passport": "^1.0.16",
 		"@types/passport-local": "^1.0.38",
 		"@types/validator": "^13.11.9",
+		"copyfiles": "^2.4.1",
 		"nodemon": "^3.1.0",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.4.5"
