@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "nodemon src/index.ts",
 		"prod": "node dist/index.js",
-		"build": "yarn install && tsc && copyfiles -u 1 src/views/**/* dist/views && copyfiles -u 1 src/public/**/* dist/public"
+		"build": "yarn install && tsc -p tsconfig.json && copyfiles src/views dist/views && copyfiles src/public dist/public"
 	},
 	"keywords": [],
 	"author": "",
