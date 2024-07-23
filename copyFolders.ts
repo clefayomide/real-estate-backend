@@ -1,5 +1,5 @@
-import fs from "fs-extra";
-import path from "path";
+const fs = require("fs-extra");
+const path = require("path");
 
 const viewInDir = path.join(__dirname, "src", "views");
 const viewOutDir = path.join(__dirname, "dist", "views");
@@ -8,7 +8,7 @@ const publicInDir = path.join(__dirname, "src", "public");
 const publicOutDir = path.join(__dirname, "dist", "public");
 
 fs.removeSync(viewOutDir);
-fs.removeSync(publicOutDir)
+fs.removeSync(publicOutDir);
 
 async function copyFiles() {
 	try {
