@@ -32,7 +32,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.set("view engine", "hbs");
 app.use(static_(path.join(__dirname, "./public")));
-app.set("views", path.join(__dirname, "./views"));
+app.use(static_(path.join(__dirname, "./views")));
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
