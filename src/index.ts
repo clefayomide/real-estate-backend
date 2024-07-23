@@ -18,6 +18,7 @@ import { db } from "./config/db/real-estate";
 import { authRoute, searchRoute, verificationRoute } from "./routes";
 import passport from "passport";
 import isAuthenticated from "./middleware/isAuthenticated";
+import { fsync, readdirSync, readSync } from "fs";
 
 const app = express();
 const currentVersion = "/v1";
@@ -31,8 +32,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.set("view engine", "hbs");
-app.use(static_(path.join(__dirname, "./public")));
-app.use(static_(path.join(__dirname, "./views")));
+app.use(static_(path.join(__dirname, "public")));
+app.use(static_(path.join(__dirname, "views")));
+console.log(
+	"Files in views directory:",
+	readdirSync(path.join(__dirname, "views"))
+);
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
