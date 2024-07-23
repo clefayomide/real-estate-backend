@@ -6,8 +6,8 @@
 	"scripts": {
 		"start": "nodemon src/index.ts",
 		"prod": "node dist/index.js",
-		"copyFolders": "npx ts-node copyFolders.ts",
-		"build": "yarn run install && tsc & yarn run copyFolders"
+		"copyFolders": "ts-node copyFolders.ts",
+		"build": "yarn install && tsc & yarn run copyFolders"
 	},
 	"keywords": [],
 	"author": "",
