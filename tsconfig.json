@@ -8,5 +8,6 @@
 		"forceConsistentCasingInFileNames": true,
 		"outDir": "./dist",
 	},
+	"include": ["src", "copyFolders.ts"],
 	"exclude": ["node_modules"]
 }
