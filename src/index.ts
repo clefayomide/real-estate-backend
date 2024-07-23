@@ -31,9 +31,9 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.set('views', path.join(__dirname, 'views'));
 app.set("view engine", "hbs");
 app.use(static_(path.join(__dirname, "public")));
-app.use(static_(path.join(__dirname, "views")));
 console.log(
 	"Files in views directory:",
 	readdirSync(path.join(__dirname, "views"))
