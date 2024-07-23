@@ -7,8 +7,6 @@
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"outDir": "./dist",
-		"rootDir": "./src"
 	},
-	"include": ["src", "copyFolders.ts"],
 	"exclude": ["node_modules"]
 }
