@@ -43,7 +43,8 @@ app.use(
 			maxAge: 259200000,
 			httpOnly: true,
 			secure: app.settings["env"] !== "development",
-			sameSite: "none"
+			sameSite: "none",
+			domain: ".vercel.app",
 		},
 		secret: process.env.COOKIE_SECRET as string,
 		resave: false,
