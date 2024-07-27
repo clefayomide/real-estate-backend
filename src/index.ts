@@ -44,7 +44,6 @@ app.use(
 			httpOnly: true,
 			secure: app.settings["env"] !== "development",
 			sameSite: "none",
-			domain: ".vercel.app",
 		},
 		secret: process.env.COOKIE_SECRET as string,
 		resave: false,
