@@ -48,10 +48,20 @@ export async function checkIfUserExist(data: Omit<SignUpType, "password">) {
 	}
 }
 
-export async function getUser(
-	data: Omit<Omit<SignUpType, "username">, "password">
-) {
-	const { email } = data;
+export async function getUserById(id: number) {
+	try {
+		const user = await db.users.findUnique({
+			where: {
+				id,
+			},
+		});
+		return user;
+	} catch (error) {
+		throw error;
+	}
+}
+
+export async function getUserByEmail(email: string) {
 	try {
 		const user = await db.users.findUnique({
 			where: {

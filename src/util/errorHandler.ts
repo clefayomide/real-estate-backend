@@ -11,3 +11,4 @@ export const errorHandler = (error: string | Error | CustomError) => {
 	}
 	return { errorMessage: error };
 };
+

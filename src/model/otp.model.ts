@@ -33,6 +33,7 @@ export async function createOtp(userId: number) {
 		});
 		return { otp, email: email };
 	} catch (error) {
+		console.error(error);
 		throw error;
 	}
 }
@@ -55,6 +56,7 @@ export async function verifyOtp(userId: number, otp: number | string) {
 		const checks = { isOtpValid, isOtpExpired };
 		return checks;
 	} catch (error) {
+		console.error(error);
 		throw error;
 	}
 }

@@ -1,9 +1,9 @@
 import { Request, NextFunction, Response } from "express";
-import passport from "passport";
 import {
 	checkIfUserExist,
 	createNewUser,
-	getUser,
+	getUserByEmail,
+	getUserById,
 	updateUserVerificationStatus,
 } from "../model/user.model";
 import { appMailer } from "../lib";
@@ -12,29 +12,49 @@ import { CustomError } from "../lib/custom/errorConstructor";
 import { ErrorResponseFactory } from "../factory/ErrorFactory";
 import { SuccessResponseFactory } from "../factory/SuccessFactory";
 import { errorHandler } from "../util/errorHandler";
+import { issueJWT, validateHash } from "../lib/cryptography/cryptography";
+import { UserObjectType } from "../types";
 
 export class User {
 	login(req: Request, res: Response, next: NextFunction) {
-		passport.authenticate(
-			"local",
-			(err: string, user: any, info: any, status: any) => {
-				if (err) {
+		const { email = "", password = "" } = req.body;
+		getUserByEmail(email)
+			.then((user) => {
+				if (!user) {
 					const { create } = new ErrorResponseFactory();
-					const { error: errorResponse } = create(err, 401);
-					return res.status(errorResponse.code).jsonp(errorResponse);
+					const { error: errorResponse } = create(
+						"incorrect email or password",
+						400
+					);
+					throw new CustomError(errorResponse.message, errorResponse);
 				}
 
-				req.logIn(user, () => {
-					const { create } = new SuccessResponseFactory();
-					const { success: successResponse } = create(
-						"Login Successful",
-						200,
-						req.user
+				const isValidCred = validateHash(password, user.salt, user.hash);
+				if (!isValidCred) {
+					const { create } = new ErrorResponseFactory();
+					const { error: errorResponse } = create(
+						"incorrect email or password",
+						400
 					);
-					res.status(successResponse.code).jsonp(successResponse);
+					throw new CustomError(errorResponse.message, errorResponse);
+				}
+				const issuedToken = issueJWT(user);
+				const userObject: UserObjectType = { ...user };
+				delete userObject.hash;
+				delete userObject.salt;
+				const { create } = new SuccessResponseFactory();
+				const { success: successResponse } = create("Login Succesful", 200, {
+					...userObject,
+					...issuedToken,
 				});
-			}
-		)(req, res, next);
+				res.status(successResponse.code).json(successResponse);
+			})
+			.catch((error) => {
+				const { errorMessage, data: { code = 500 } = {} } = errorHandler(error);
+				const { create } = new ErrorResponseFactory();
+				const { error: errorResponse } = create(errorMessage, code);
+				res.status(errorResponse.code).json(errorResponse);
+			});
 	}
 
 	register(req: Request, res: Response, next: NextFunction) {
@@ -88,9 +108,8 @@ export class User {
 
 	verificationRequest(req: Request, res: Response, next: NextFunction) {
 		const id = req.body.id;
-		const email = req.body.email;
 
-		getUser({ email })
+		getUserById(id)
 			.then((user) => {
 				if (!user) {
 					const { create } = new ErrorResponseFactory();
@@ -101,7 +120,7 @@ export class User {
 					throw new CustomError(errorResponse.message, errorResponse);
 				}
 				const { verified } = user;
-				if (Boolean(verified)) {
+				if (verified) {
 					const { create } = new SuccessResponseFactory();
 					const { success: successResponse } = create(
 						"Account already verified",

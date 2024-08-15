@@ -10,23 +10,22 @@ import express, {
 import createError from "http-errors";
 import path from "path";
 import cors from "cors";
-import cookieParser from "cookie-parser";
 import logger from "morgan";
-import expressSession from "express-session";
-import { PrismaSessionStore } from "@quixo3/prisma-session-store";
-import { db } from "./config/db/real-estate";
 import { authRoute, searchRoute, verificationRoute } from "./routes";
-import passport from "passport";
-import isAuthenticated from "./middleware/isAuthenticated";
+import {
+	checkIfUserIsAuthenticated,
+	verifyUserSuppliedID,
+} from "./middleware";
+import { appConfig } from "./config/app";
 
 const app = express();
 const currentVersion = "/v1";
 
-const port = process.env.PORT ?? 8000;
+const port = appConfig.port;
 
 const corsOptions = {
 	credentials: true,
-	origin: process.env.CLIENT_PORT,
+	origin: appConfig.clientOrigin,
 };
 
 app.use(cors(corsOptions));
@@ -36,6 +35,7 @@ app.use(static_(path.join(__dirname, "public")));
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
+<<<<<<< Updated upstream
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
 	expressSession({
@@ -59,10 +59,17 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 require("./config/passport/local");
+=======
+>>>>>>> Stashed changes
 
 app.use(`${currentVersion}/search`, searchRoute);
 app.use(`${currentVersion}/auth`, authRoute);
-app.use(`${currentVersion}/verification`, isAuthenticated, verificationRoute);
+app.use(
+	`${currentVersion}/verification`,
+	checkIfUserIsAuthenticated,
+	verifyUserSuppliedID,
+	verificationRoute
+);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

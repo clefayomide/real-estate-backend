@@ -1,3 +1,4 @@
+
 export interface SignUpType {
 	username: string;
 	password: string;
