@@ -35,33 +35,6 @@ app.use(static_(path.join(__dirname, "public")));
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
-<<<<<<< Updated upstream
-app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(
-	expressSession({
-		cookie: {
-			maxAge: 259200000,
-			httpOnly: true,
-			secure: app.settings["env"] !== "development",
-			sameSite: "none",
-		},
-		secret: process.env.COOKIE_SECRET as string,
-		resave: false,
-		saveUninitialized: false,
-		// @ts-ignore
-		store: new PrismaSessionStore(db, {
-			checkPeriod: 2 * 60 * 1000, //ms
-			dbRecordIdIsSessionId: true,
-			dbRecordIdFunction: undefined,
-		}),
-	})
-);
-app.use(passport.initialize());
-app.use(passport.session());
-require("./config/passport/local");
-=======
->>>>>>> Stashed changes
-
 app.use(`${currentVersion}/search`, searchRoute);
 app.use(`${currentVersion}/auth`, authRoute);
 app.use(
