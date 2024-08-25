@@ -25,7 +25,7 @@ export const generateHash = (password: string) => {
 	};
 };
 
-export const issueJWT = (user: UserObjectType) => {
+export const issueJWT = (user: Pick<UserObjectType, "id">) => {
 	const expiresIn = "1d";
 
 	const payload = {

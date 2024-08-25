@@ -1,4 +1,3 @@
-
 export interface SignUpType {
 	username: string;
 	password: string;
@@ -6,7 +5,12 @@ export interface SignUpType {
 }
 
 export interface UserObjectType extends Omit<SignUpType, "password"> {
-	[key: string]: any;
+	id: number;
+	hash: string;
+	salt: string;
+	verified: boolean | null;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 interface RequestResponseI {
@@ -22,3 +26,5 @@ export interface ErrorType extends RequestResponseI {
 export interface SuccessType extends RequestResponseI {
 	data?: any;
 }
+
+export type getUserType = { email: string } | { id: number };

@@ -1,5 +1,5 @@
 import { generateHash } from "../lib/cryptography/cryptography";
-import { SignUpType } from "../types";
+import { getUserType, SignUpType } from "../types";
 import { db } from "../config/db/real-estate";
 
 export async function createNewUser(data: SignUpType) {
@@ -17,6 +17,7 @@ export async function createNewUser(data: SignUpType) {
 		});
 		return user;
 	} catch (error) {
+		console.error(error);
 		throw error;
 	}
 }
@@ -44,32 +45,40 @@ export async function checkIfUserExist(data: Omit<SignUpType, "password">) {
 		});
 		return user.length > 0;
 	} catch (error) {
+		console.error(error);
 		throw error;
 	}
 }
 
-export async function getUserById(id: number) {
-	try {
-		const user = await db.users.findUnique({
-			where: {
-				id,
-			},
-		});
-		return user;
-	} catch (error) {
-		throw error;
-	}
-}
 
-export async function getUserByEmail(email: string) {
+export async function getUser(data: getUserType) {
+	let suppliedEmail: string | undefined;
+	let suppliedId: number | undefined;
+
+	if ("email" in data) {
+		const { email } = data;
+		suppliedEmail = email;
+	}
+
+	if ("id" in data) {
+		const { id } = data;
+		suppliedId = id;
+	}
+
 	try {
-		const user = await db.users.findUnique({
+		const user = await db.users.findFirst({
 			where: {
-				email,
+				OR: [
+					{
+						email: suppliedEmail,
+					},
+					{ id: suppliedId },
+				],
 			},
 		});
 		return user;
 	} catch (error) {
+		console.error(error);
 		throw error;
 	}
 }
@@ -81,6 +90,7 @@ export async function updateUserVerificationStatus(
 	try {
 		await db.users.update({ where: { id }, data: { verified: status } });
 	} catch (error) {
+		console.error(error);
 		throw error;
 	}
 }
